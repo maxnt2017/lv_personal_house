@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Розумна хата</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card h3 {
+            margin-top: 0;
+            color: #0056b3;
+        }
+        .camera-feed {
+            width: 100%;
+            background-color: #000;
+            border: 1px solid #ddd;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.2em;
+            background-image: url('https://via.placeholder.com/400x225.png?text=Камера+офлайн');
+            background-size: cover;
+            background-position: center;
+            border-radius: 4px;
+        }
+        .controls button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+        .btn-on {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-off {
+            background-color: #dc3545;
+            color: white;
+        }
+        .status {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+        .status-locked {
+            color: #dc3545;
+        }
+        .status-unlocked {
+            color: #28a745;
+        }
+        .status-on {
+            color: #28a745;
+        }
+        .status-off {
+            color: #dc3545;
+        }
+        .thermostat {
+            text-align: center;
+        }
+        .thermostat .temperature {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .thermostat input[type="range"] {
+            width: 80%;
+        }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center; color: #0056b3;">Панель керування "Розумний Дім"</h1>
+
+    <div class="container">
+        <div class="card">
+            <h3>Камера спостереження (Вхід)</h3>
+            <div class="camera-feed" id="camera-feed">
+                <span>Відео не доступне</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Вхідні двері</h3>
+            <div class="controls">
+                <button class="btn-on" onclick="toggleDoor(true)">Відчинити</button>
+                <button class="btn-off" onclick="toggleDoor(false)">Зачинити</button>
+            </div>
+            <div class="status" id="door-status">Статус: Зачинено</div>
+        </div>
+
+        <div class="card">
+            <h3>Освітлення (Вітальня)</h3>
+            <div class="controls">
+                <button class="btn-on" onclick="toggleLight('living-room', true)">Увімкнути</button>
+                <button class="btn-off" onclick="toggleLight('living-room', false)">Вимкнути</button>
+            </div>
+            <div class="status" id="living-room-light-status">Статус: Вимкнено</div>
+        </div>
+
+        <div class="card">
+            <h3>Освітлення (Кухня)</h3>
+            <div class="controls">
+                <button class="btn-on" onclick="toggleLight('kitchen', true)">Увімкнути</button>
+                <button class="btn-off" onclick="toggleLight('kitchen', false)">Вимкнути</button>
+            </div>
+            <div class="status" id="kitchen-light-status">Статус: Вимкнено</div>
+        </div>
+
+        <div class="card thermostat">
+            <h3>Термостат</h3>
+            <div class="temperature"><span id="temp-display">22</span>°C</div>
+            <input type="range" min="15" max="30" value="22" oninput="updateTemperature(this.value)">
+        </div>
+
+        <div class="card">
+            <h3>Розумна розетка (Кавоварка)</h3>
+            <div class="controls">
+                <button class="btn-on" onclick="toggleSocket(true)">Увімкнути</button>
+                <button class="btn-off" onclick="toggleSocket(false)">Вимкнути</button>
+            </div>
+            <div class="status" id="socket-status">Статус: Вимкнено</div>
+        </div>
+    </div>
+
+    <script>
+        // Двері
+        function toggleDoor(isUnlocked) {
+            const doorStatus = document.getElementById('door-status');
+            if (isUnlocked) {
+                doorStatus.textContent = 'Статус: Відчинено';
+                doorStatus.className = 'status status-unlocked';
+            } else {
+                doorStatus.textContent = 'Статус: Зачинено';
+                doorStatus.className = 'status status-locked';
+            }
+        }
+
+        // Освітлення
+        function toggleLight(room, isOn) {
+            const lightStatus = document.getElementById(`${room}-light-status`);
+            if (isOn) {
+                lightStatus.textContent = 'Статус: Увімкнено';
+                lightStatus.className = 'status status-on';
+            } else {
+                lightStatus.textContent = 'Статус: Вимкнено';
+                lightStatus.className = 'status status-off';
+            }
+        }
+
+        // Термостат
+        function updateTemperature(value) {
+            document.getElementById('temp-display').textContent = value;
+        }
+
+        // Розумна розетка
+        function toggleSocket(isOn) {
+            const socketStatus = document.getElementById('socket-status');
+            if (isOn) {
+                socketStatus.textContent = 'Статус: Увімкнено';
+                socketStatus.className = 'status status-on';
+            } else {
+                socketStatus.textContent = 'Статус: Вимкнено';
+                socketStatus.className = 'status status-off';
+            }
+        }
+
+        // Симуляція оновлення камери (для демонстрації)
+        // У реальному проекті тут буде код для підключення до відеопотоку
+        // Наприклад, через WebRTC або вставку MJPEG потоку
+        const cameraFeed = document.getElementById('camera-feed');
+        setTimeout(() => {
+            cameraFeed.style.backgroundImage = "url('https://i.gifer.com/origin/f5/f5345761bff131568c2253303c79e6f3_w200.gif')";
+            cameraFeed.innerHTML = '';
+        }, 3000);
+    </script>
+
+</body>
+</html>
